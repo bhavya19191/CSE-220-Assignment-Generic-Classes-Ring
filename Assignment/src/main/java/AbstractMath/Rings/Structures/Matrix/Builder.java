@@ -1,5 +1,8 @@
-import java.util.ArrayList;
+package AbstractMath.Rings.Structures.Matrix;
+import AbstractMath.Rings.RingElement;
+
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -18,7 +21,18 @@ public final class Builder<T extends RingElement<T>> {
      */
     public Builder(int rows, int columns) {
         Matrix.validateDimensions(rows, columns);
-        // stuff missing here
+        this.rows = rows;
+        this.columns = columns;
+
+        this.values = new ArrayList<>();
+
+        for (int i = 0; i < rows; i++) {
+            List<T> row = new ArrayList<>();
+            for (int j = 0; j < columns; j++) {
+                row.add(null);
+            }
+            values.add(row);
+        }
     }
 
     /**

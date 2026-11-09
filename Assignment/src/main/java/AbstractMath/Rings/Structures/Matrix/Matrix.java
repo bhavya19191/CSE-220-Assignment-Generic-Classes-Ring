@@ -1,3 +1,5 @@
+package AbstractMath.Rings.Structures.Matrix;
+import AbstractMath.Rings.RingElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -11,6 +13,13 @@ import java.util.Objects;
  * @param <T> the entry type, which supplies its own ring operations
  */
 public final class Matrix<T extends RingElement<T>> implements RingElement<Matrix<T>> {
+    public int getRows() {
+        return rows;
+    }
+
+    public int getColumns() {
+        return columns;
+    }
     private final int rows;
     private final int columns;
     private final List<List<T>> values;
@@ -70,6 +79,108 @@ public final class Matrix<T extends RingElement<T>> implements RingElement<Matri
     public static <T extends RingElement<T>> Builder<T> builder(int rows, int columns) {
         return new Builder<>(rows, columns);
     }
+    public T getValue(int row, int column) {
+        validateCoordinates(row, column, rows, columns);
+        return values.get(row).get(column);
+    }
+    @Override
+    public Matrix<T> add(Matrix<T> other) {
+        requireSameSize(other);
+
+        List<List<T>> result = new ArrayList<>();
+
+        for (int row = 0; row < rows; row++) {
+            List<T> newRow = new ArrayList<>();
+
+            for (int column = 0; column < columns; column++) {
+                newRow.add(
+                        getValue(row, column).add(other.getValue(row, column))
+                );
+            }
+
+            result.add(newRow);
+        }
+
+        return new Matrix<>(rows, columns, result);
+    }
+    @Override
+    public Matrix<T> negate() {
+        List<List<T>> result = new ArrayList<>();
+
+        for (int row = 0; row < rows; row++) {
+            List<T> newRow = new ArrayList<>();
+
+            for (int column = 0; column < columns; column++) {
+                newRow.add(getValue(row, column).negate());
+            }
+
+            result.add(newRow);
+        }
+
+        return new Matrix<>(rows, columns, result);
+    }
+    @Override
+    public Matrix<T> multiply(Matrix<T> other) {
+        requireSameSize(other);
+
+        List<List<T>> result = new ArrayList<>();
+
+        for (int row = 0; row < rows; row++) {
+            List<T> newRow = new ArrayList<>();
+
+            for (int column = 0; column < columns; column++) {
+                T sum = getValue(row, 0).zero();
+
+                for (int k = 0; k < columns; k++) {
+                    T product = getValue(row, k).multiply(other.getValue(k, column));
+                    sum = sum.add(product);
+                }
+
+                newRow.add(sum);
+            }
+
+            result.add(newRow);
+        }
+
+        return new Matrix<>(rows, columns, result);
+    }
+    @Override
+    public Matrix<T> zero() {
+        List<List<T>> result = new ArrayList<>();
+
+        for (int row = 0; row < rows; row++) {
+            List<T> newRow = new ArrayList<>();
+
+            for (int column = 0; column < columns; column++) {
+                newRow.add(getValue(row, column).zero());
+            }
+
+            result.add(newRow);
+        }
+
+        return new Matrix<>(rows, columns, result);
+    }
+    @Override
+    public Matrix<T> one() {
+        List<List<T>> result = new ArrayList<>();
+
+        for (int row = 0; row < rows; row++) {
+            List<T> newRow = new ArrayList<>();
+
+            for (int column = 0; column < columns; column++) {
+                if (row == column) {
+                    newRow.add(getValue(0, 0).one());
+                } else {
+                    newRow.add(getValue(0, 0).zero());
+                }
+            }
+
+            result.add(newRow);
+        }
+
+        return new Matrix<>(rows, columns, result);
+    }
+
 
 
 
